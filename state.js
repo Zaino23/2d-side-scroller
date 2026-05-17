@@ -1,0 +1,253 @@
+export const states =  {
+  STANDING_LEFT: 0,
+  STANDING_RIGHT: 1,
+  SITTING_LEFT: 2,
+  SITTING_RIGHT: 3,
+  RUNNING_LEFT: 4,
+  RUNNING_RIGHT: 5,
+  JUMPING_LEFT: 6,
+  JUMPING_RIGHT: 7,
+  FALLING_LEFT: 8,
+  FALLING_RIGHT: 9,
+  DIVING_LEFT: 10,
+  DIVING_RIGHT: 11,
+  ROLLING_LEFT: 12,
+  ROLLING_RIGHT: 13,
+}
+
+class State {
+  constructor(state) {
+    this.state = state;
+  }
+}
+
+export class StandingLeft extends State {
+  constructor(player) {
+    super('STANDING LEFT');
+    this.player = player;
+  } 
+  enter() {
+    this.player.frameY = 1;
+    this.player.speed = 0;
+    this.player.maxFrameX = 6;
+  }
+  handleInput(input) {
+    if(input.includes('ARROWRIGHT') || input.includes('D')) this.player.setState(states.RUNNING_RIGHT);
+    else if(input.includes('ARROWLEFT') || input.includes('A')) this.player.setState(states.RUNNING_LEFT);
+    else if(input.includes('ARROWDOWN') || input.includes('S')) this.player.setState(states.SITTING_LEFT);
+    else if(input.includes(' ')) this.player.setState(states.JUMPING_LEFT);
+  }
+}
+export class StandingRight extends State {
+  constructor(player) {
+    super('STANDING RIGHT');
+    this.player = player;
+  } 
+  enter() {
+    this.player.frameY = 0;
+    this.player.speed = 0;
+    this.player.maxFrameX = 6;
+  }
+  handleInput(input) {
+    if(input.includes('ARROWLEFT') || input.includes('A')) this.player.setState(states.RUNNING_LEFT);
+    else if(input.includes('ARROWRIGHT') || input.includes('D')) this.player.setState(states.RUNNING_RIGHT);
+    else if(input.includes('ARROWDOWN') || input.includes('S')) this.player.setState(states.SITTING_RIGHT);
+    else if(input.includes(' ')) this.player.setState(states.JUMPING_RIGHT);
+  }
+}
+export class SittingLeft extends State {
+  constructor(player) {
+    super('SITTING LEFT');
+    this.player = player;
+  } 
+  enter() {
+    this.player.frameY = 9;
+    this.player.speed = 0;
+    this.player.maxFrameX = 4;
+  }
+  handleInput(input) {
+    if(input.includes('ARROWRIGHT') || input.includes('D')) this.player.setState(states.SITTING_RIGHT);
+    else if(!input.includes('ARROWDOWN') && !input.includes('S')) this.player.setState(states.STANDING_LEFT);
+  }
+}
+export class SittingRight extends State {
+  constructor(player) {
+    super('SITTING RIGHT');
+    this.player = player;
+  } 
+  enter() {
+    this.player.frameY = 8;
+    this.player.speed = 0;
+    this.player.maxFrameX = 4;
+  }
+  handleInput(input) {
+    if(input.includes('ARROWLEFT') || input.includes('A')) this.player.setState(states.SITTING_LEFT);
+    else if(!input.includes('ARROWDOWN') && !input.includes('S')) this.player.setState(states.STANDING_RIGHT);
+  }
+}
+export class RunningLeft extends State {
+  constructor(player) {
+    super('RUNNING LEFT');
+    this.player = player;
+  } 
+  enter() {
+    this.player.frameY = 7;
+    this.player.speed = -this.player.maxSpeed;
+    this.player.maxFrameX = 8;
+  }
+  handleInput(input) {
+    if(input.includes('ARROWRIGHT') || input.includes('D')) this.player.setState(states.RUNNING_RIGHT);
+    else if(!input.includes('ARROWLEFT') && !input.includes('A')) this.player.setState(states.STANDING_LEFT);
+    else if(input.includes(' ')) this.player.setState(states.JUMPING_LEFT)
+    else if(input.includes('ARROWDOWN') || input.includes('S')) this.player.setState(states.SITTING_LEFT);
+    else if(input.includes('ARROWUP') || input.includes('W')) this.player.setState(states.ROLLING_LEFT);
+  }
+}
+export class RunningRight extends State {
+  constructor(player) {
+    super('RUNNING RIGHT');
+    this.player = player;
+  } 
+  enter() {
+    this.player.frameY = 6;
+    this.player.speed = this.player.maxSpeed;
+    this.player.maxFrameX = 8;
+  }
+  handleInput(input) {
+    if(input.includes('ARROWLEFT') || input.includes('A')) this.player.setState(states.RUNNING_LEFT);
+    else if(!input.includes('ARROWRIGHT') && !input.includes('D')) this.player.setState(states.STANDING_RIGHT);
+    else if(input.includes(' ')) this.player.setState(states.JUMPING_RIGHT);
+    else if(input.includes('ARROWDOWN') || input.includes('S')) this.player.setState(states.SITTING_RIGHT);
+    else if(input.includes('ARROWUP') || input.includes('W')) this.player.setState(states.ROLLING_RIGHT);
+  }
+}
+export class JumpingLeft extends State {
+  constructor(player) {
+    super('JUMPING LEFT');
+    this.player = player;
+  } 
+  enter() {
+    this.player.frameY = 3;
+    if(this.player.onGround()) this.player.vy -= 20;
+    this.player.maxFrameX = 6;
+  }
+  handleInput(input) {
+    if(input.includes('ARROWRIGHT') || input.includes('D')) this.player.setState(states.JUMPING_RIGHT)
+    else if(input.includes("ARROWDOWN") || input.includes('S')) this.player.setState(states.DIVING_LEFT)
+    else if(this.player.onGround()) this.player.setState(states.STANDING_LEFT)
+    else if(this.player.vy > 0 ) this.player.setState(states.FALLING_LEFT)
+  }
+}
+export class JumpingRight extends State {
+  constructor(player) {
+    super('JUMPING Right');
+    this.player = player;
+  } 
+  enter() {
+    this.player.frameY = 2;
+    if(this.player.onGround()) this.player.vy -=20;
+    this.player.maxFrameX = 6;
+  }
+  handleInput(input) {
+    if(input.includes('ARROWLEFT') || input.includes('A')) this.player.setState(states.JUMPING_LEFT);
+    else if(input.includes("ARROWDOWN") || input.includes('S')) this.player.setState(states.DIVING_RIGHT)
+    else if(this.player.onGround()) this.player.setState(states.STANDING_RIGHT)
+    else if(this.player.vy > 0 ) this.player.setState(states.FALLING_RIGHT)
+  }
+}
+export class FallingLeft extends State {
+  constructor(player) {
+    super('FALLING LEFT');
+    this.player = player;
+  } 
+  enter() {
+    this.player.frameY = 5;
+    this.player.maxFrameX = 6;
+  }
+  handleInput(input) {
+    if(this.player.onGround()) this.player.setState(states.STANDING_LEFT)
+    else if(input.includes("ARROWDOWN") || input.includes('S')) this.player.setState(states.DIVING_LEFT)
+  }
+}
+export class FallingRight extends State {
+  constructor(player) {
+    super('FALLING RIGHT');
+    this.player = player;
+  } 
+  enter() {
+    this.player.frameY = 4;
+    this.player.maxFrameX = 6;
+  }
+  handleInput(input) {
+    if(this.player.onGround()) this.player.setState(states.STANDING_RIGHT)
+    else if(input.includes("ARROWDOWN") || input.includes('S')) this.player.setState(states.DIVING_RIGHT)
+  }
+}
+export class DivingLeft extends State {
+  constructor(player) {
+    super('DIVING LEFT');
+    this.player = player;
+  } 
+  enter() {
+    this.player.frameY = 10;
+    this.player.vy += 10;
+    this.player.maxFrameX = 6;
+  }
+  handleInput(input) {
+    if(this.player.onGround()) {this.player.setState(states.STANDING_LEFT); this.player.diveLanded = true;}
+  }
+}
+export class DivingRight extends State {
+  constructor(player) {
+    super('DIVING RIGHT');
+    this.player = player;
+  } 
+  enter() {
+    this.player.frameY = 11;
+    this.player.vy += 10;
+    this.player.maxFrameX = 6;
+  }
+  handleInput(input) {
+    if(this.player.onGround())  {this.player.setState(states.STANDING_RIGHT); this.player.diveLanded = true}
+  }
+}
+export class RollingLeft extends State {
+  constructor(player) {
+    super('ROLLING LEFT');
+    this.player = player;
+    this.timer = 0;
+  }
+  enter() {
+    this.player.frameY = 10;
+    this.player.speed = -this.player.maxSpeed * 2;
+    this.player.maxFrameX = 6;
+    this.timer = 0;
+  }
+  handleInput(input, deltaTime) {
+    this.timer += deltaTime;
+    if(this.timer >= 325) this.player.setState(states.STANDING_LEFT);
+    else if(input.includes(' ')) this.player.setState(states.JUMPING_LEFT);
+    else if(input.includes('ARROWRIGHT') || input.includes('D')) this.player.setState(states.RUNNING_RIGHT);
+    else if(input.includes('ARROWDOWN') || input.includes('S')) this.player.setState(states.SITTING_LEFT);
+  }
+}
+export class RollingRight extends State {
+  constructor(player) {
+    super('ROLLING RIGHT');
+    this.player = player;
+    this.timer = 0;
+  }
+  enter() {
+    this.player.frameY = 11;
+    this.player.speed = this.player.maxSpeed * 2;
+    this.player.maxFrameX = 6;
+    this.timer = 0;
+  }
+  handleInput(input, deltaTime) {
+    this.timer += deltaTime;
+    if(this.timer >= 325) this.player.setState(states.STANDING_RIGHT);
+    else if(input.includes(' ')) this.player.setState(states.JUMPING_RIGHT);
+    else if(input.includes('ARROWLEFT') || input.includes('A')) this.player.setState(states.RUNNING_LEFT);
+    else if(input.includes('ARROWDOWN') || input.includes('S')) this.player.setState(states.SITTING_RIGHT);
+  }
+}
