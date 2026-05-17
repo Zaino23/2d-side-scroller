@@ -1,7 +1,7 @@
 import Player from "./player.js";
 import InputHandler from "./input.js";
 import { drawStatus } from "./utils.js";
-import { FireParticles } from "./partcles.js";
+import { FireParticles } from "./particles.js";
 import Layer from "./background.js";
 
 window.onload = () => {
@@ -43,7 +43,6 @@ window.onload = () => {
   const layer5 = new Layer(document.getElementById('layer5'), 0.7, canvas);
 
   const layers = [layer1, layer2, layer3, layer4, layer5]
-  let gameSpeed = 7;
   
   let lastTime = 0;
   function animate(timeStamp) {
