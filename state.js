@@ -13,6 +13,8 @@ export const states =  {
   DIVING_RIGHT: 11,
   ROLLING_LEFT: 12,
   ROLLING_RIGHT: 13,
+  AIRROLLING_LEFT: 14,
+  AIRROLLING_RIGHT: 15,
 }
 
 class State {
@@ -134,13 +136,14 @@ export class JumpingLeft extends State {
   handleInput(input) {
     if(input.includes('ARROWRIGHT') || input.includes('D')) this.player.setState(states.JUMPING_RIGHT)
     else if(input.includes("ARROWDOWN") || input.includes('S')) this.player.setState(states.DIVING_LEFT)
+    else if(input.includes("ARROWUP") || input.includes('W')) this.player.setState(states.AIRROLLING_LEFT)
     else if(this.player.onGround()) this.player.setState(states.STANDING_LEFT)
     else if(this.player.vy > 0 ) this.player.setState(states.FALLING_LEFT)
   }
 }
 export class JumpingRight extends State {
   constructor(player) {
-    super('JUMPING Right');
+    super('JUMPING RIGHT');
     this.player = player;
   } 
   enter() {
@@ -151,6 +154,7 @@ export class JumpingRight extends State {
   handleInput(input) {
     if(input.includes('ARROWLEFT') || input.includes('A')) this.player.setState(states.JUMPING_LEFT);
     else if(input.includes("ARROWDOWN") || input.includes('S')) this.player.setState(states.DIVING_RIGHT)
+    else if(input.includes("ARROWUP") || input.includes('W')) this.player.setState(states.AIRROLLING_RIGHT)
     else if(this.player.onGround()) this.player.setState(states.STANDING_RIGHT)
     else if(this.player.vy > 0 ) this.player.setState(states.FALLING_RIGHT)
   }
@@ -189,9 +193,18 @@ export class DivingLeft extends State {
     this.player = player;
   } 
   enter() {
-    this.player.frameY = 10;
-    this.player.vy += 10;
-    this.player.maxFrameX = 6;
+    if(!this.player.energy.hasEnough(30)) {
+      this.player.energy.triggerFlash();
+      if(this.player.vy >= 0) this.player.setState(states.FALLING_LEFT);
+      else if(this.player.vy < 0) this.player.setState(states.JUMPING_LEFT);
+    }
+    else {
+      this.player.energy.drain(30)
+      
+      this.player.frameY = 10;
+      this.player.vy += 20;
+      this.player.maxFrameX = 6;
+    }
   }
   handleInput(input) {
     if(this.player.onGround()) {this.player.setState(states.STANDING_LEFT); this.player.diveLanded = true;}
@@ -203,9 +216,19 @@ export class DivingRight extends State {
     this.player = player;
   } 
   enter() {
-    this.player.frameY = 11;
-    this.player.vy += 10;
-    this.player.maxFrameX = 6;
+    if(!this.player.energy.hasEnough(30)) {
+      this.player.energy.triggerFlash();
+      if(this.player.vy >= 0) this.player.setState(states.FALLING_RIGHT);
+      else if(this.player.vy < 0) this.player.setState(states.JUMPING_RIGHT);
+    }
+    else {
+      this.player.energy.drain(30);
+      
+      this.player.frameY = 11;
+      this.player.vy += 20;
+      this.player.maxFrameX = 6;
+    }
+
   }
   handleInput(input) {
     if(this.player.onGround())  {this.player.setState(states.STANDING_RIGHT); this.player.diveLanded = true}
@@ -218,10 +241,15 @@ export class RollingLeft extends State {
     this.timer = 0;
   }
   enter() {
-    this.player.frameY = 10;
-    this.player.speed = -this.player.maxSpeed * 2;
-    this.player.maxFrameX = 6;
-    this.timer = 0;
+    if(!this.player.energy.hasEnough(40)) {this.player.setState(states.RUNNING_LEFT); this.player.energy.triggerFlash();}
+    else {
+      this.player.energy.drain(40) 
+      
+      this.player.frameY = 10;
+      this.player.speed = -this.player.maxSpeed * 2.5;
+      this.player.maxFrameX = 6;
+      this.timer = 0;
+    }
   }
   handleInput(input, deltaTime) {
     this.timer += deltaTime;
@@ -238,10 +266,15 @@ export class RollingRight extends State {
     this.timer = 0;
   }
   enter() {
-    this.player.frameY = 11;
-    this.player.speed = this.player.maxSpeed * 2;
-    this.player.maxFrameX = 6;
-    this.timer = 0;
+    if(!this.player.energy.hasEnough(40)) {this.player.setState(states.RUNNING_RIGHT); this.player.energy.triggerFlash();}
+    else {
+      this.player.energy.drain(40);
+      
+      this.player.frameY = 11;
+      this.player.speed = this.player.maxSpeed * 2.5;
+      this.player.maxFrameX = 6;
+      this.timer = 0;
+    }
   }
   handleInput(input, deltaTime) {
     this.timer += deltaTime;
@@ -251,3 +284,48 @@ export class RollingRight extends State {
     else if(input.includes('ARROWDOWN') || input.includes('S')) this.player.setState(states.SITTING_RIGHT);
   }
 }
+export class AirRollingLeft extends State {
+  constructor(player) {
+    super('AIRROLLING LEFT')
+    this.player = player;
+  }
+  enter() {
+    if(!this.player.energy.hasEnough(30)) {
+        this.player.energy.triggerFlash();
+      if(this.player.vy >= 0) this.player.setState(states.FALLING_LEFT);
+      else if(this.player.vy < 0) this.player.setState(states.JUMPING_LEFT);
+    } else {
+        this.player.frameY = 10;
+        this.player.speed = -this.player.maxSpeed * 4;
+        this.player.energy.drain(30);
+        this.player.maxFrameX = 6;
+    }
+  }
+  handleInput(input) {
+    if(input.includes('ARROWDOWN') || input.includes('S')) this.player.setState(states.DIVING_LEFT);
+    else if(this.player.vy > 0 ) this.player.setState(states.FALLING_LEFT)
+  }
+}
+export class AirRollingRight extends State {
+  constructor(player) {
+    super('AIRROLLING RIGHT')
+    this.player = player;
+  }
+  enter() {
+    if(!this.player.energy.hasEnough(30)) {
+      this.player.energy.triggerFlash();
+      if(this.player.vy >= 0) this.player.setState(states.FALLING_RIGHT);
+      else if(this.player.vy < 0) this.player.setState(states.JUMPING_RIGHT);
+    } else {
+        this.player.frameY = 11;
+        this.player.speed = this.player.maxSpeed * 4;
+        this.player.energy.drain(30);
+        this.player.maxFrameX = 6;
+    }
+  }
+  handleInput(input) {
+    if(input.includes('ARROWDOWN') || input.includes('S')) this.player.setState(states.DIVING_RIGHT);
+    else if(this.player.vy > 0 ) this.player.setState(states.FALLING_RIGHT)
+  }
+}
+
