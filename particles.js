@@ -1,5 +1,5 @@
 export class FireParticles {
-  constructor(x, y) {
+  constructor(x, y, audio) {
     this.x = x;
     this.y =y;
     this.size = Math.random() * 40 + 20;
@@ -18,7 +18,7 @@ export class FireParticles {
   draw(context) {
     context.save();
     context.globalAlpha = this.alpha;
-    context.shadowBlur = 40;
+    context.shadowBlur = 30;
     context.shadowColor = this.color;
     context.fillStyle = this.color;
     context.beginPath();

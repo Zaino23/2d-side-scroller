@@ -39,7 +39,7 @@ export class Status {
     
     //text
     context.fillStyle = 'white';
-    context.font = '40px helvatica';
+    context.font = '40px helvetica';
     context.fillText('ENERGY:', x / 5, y +20);
 
     const ratio  = this.value / this.max;
@@ -69,11 +69,11 @@ export class Status {
   drawHealth(context, x, y, width, height) {
     //text
     context.fillStyle = 'white';
-    context.font = '50px halvatica';
-    context.fillText('HEALTH: ' + Math.floor(this.health), x / 5, y +40);
+    context.font = '46px helvetica';
+    context.fillText('HEALTH:', x / 5, y +40);
 
     //background
-    context.fillstyle = 'rgba(0,0,0,0.5)';
+    context.fillStyle = 'rgba(0,0,0,0.5)';
     context.fillRect(x, y, width, height)
 
     //color

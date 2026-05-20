@@ -5,6 +5,8 @@ import { FireParticles } from "./particles.js";
 import Layer from "./background.js";
 import { GroundEnemy, FlyingEnemies } from "./enemies.js";
 import Collision from "./collision.js";
+import { Explosion } from "./collision.js";
+import { playSFX } from "./audio.js";
 
 window.onload = () => {
   const canvas = document.getElementById("canvas");
@@ -12,12 +14,13 @@ window.onload = () => {
   canvas.width = innerWidth;
   canvas.height = innerHeight;
   const loading = document.getElementById("loading");
-  loading.style.display = "none";
+  loading.style.display = "none"; 
 
   let groundMargin = 0.16;
   const player = new Player(canvas.width, canvas.height, groundMargin);
   const input = new InputHandler();
   let particles = [];
+  let explosion = [];
 
   function handleParticles() {
     if (
@@ -36,7 +39,7 @@ window.onload = () => {
       particles.push(
         new FireParticles(
           player.x + player.width,
-          player.y + player.height / 2,
+          player.y + player.height / 2
         ),
       );
     }
@@ -45,7 +48,7 @@ window.onload = () => {
         particles.push(
           new FireParticles(
             player.x + player.width / 2,
-            player.y + player.height * 0.2,
+            player.y + player.height * 0.2
           ),
         );
       }
@@ -62,10 +65,32 @@ window.onload = () => {
   let enemies = [];
   let GroundSpawnTimer = 0;
   let FlyingSpawnTimer = 0;
-  let GroundspawnInterval = 1500;
-  let FlyingspawnInterval = 1000;
+  let GroundspawnInterval = 850;
+  let FlyingspawnInterval = 750;
 
-  function handleEnemies(deltaTime) {
+  function handleEnemies(deltaTime) {    
+    const state = player.currentState.state;
+    enemies.forEach(enemy => {
+    const isColliding = Collision.check(player, enemy)
+
+    if(isColliding && (state === 'DIVING LEFT' || state === 'DIVING RIGHT' || state === 'ROLLING LEFT' || state === 'ROLLING RIGHT'|| state === 'AIRROLLING LEFT' || state === 'AIRROLLING RIGHT')) {
+      playSFX('HitHurt');
+      enemy.markedForDeletion = true;
+      explosion.push(new Explosion(enemy.x, enemy.y));
+      player.energy.heal(5);
+      player.energy.regen(25);
+    } else if(isColliding) {
+      playSFX('HitHurt');
+      enemy.markedForDeletion = true;
+      explosion.push(new Explosion(enemy.x, enemy.y));
+      player.energy.damage(25);
+      player.energy.drain(5)
+    }
+    if(!enemy.markedForDeletion) {
+      enemy.update(player.speed, deltaTime);
+      enemy.draw(ctx, deltaTime);
+    }
+    });
     GroundSpawnTimer += deltaTime;
     FlyingSpawnTimer += deltaTime;
     if (GroundSpawnTimer >= GroundspawnInterval) {
@@ -76,23 +101,17 @@ window.onload = () => {
       enemies.push(new FlyingEnemies(canvas.width, canvas.height));
       FlyingSpawnTimer = 0;
     }
-    const state = player.currentState.state;
-    enemies.forEach(enemy => {
-      enemy.update(player.speed, deltaTime);
-      enemy.draw(ctx, deltaTime);
 
-    if(Collision.check(player, enemy) && (state === 'DIVING LEFT' || state === 'DIVING RIGHT' || state === 'ROLLING LEFT' || state === 'ROLLING RIGHT'|| state === 'AIRROLLING LEFT' || state === 'AIRROLLING RIGHT')) {
-      enemy.markedForDeletion = true;
-      player.energy.heal(5)
-      player.energy.regen(25);
-    } else if(Collision.check(player, enemy)) {
-      enemy.markedForDeletion = true;
-      player.energy.damage(15);
-      player.energy.drain(5)
-    }
+    
+    enemies = enemies.filter(e => !e.markedForDeletion)
+  }
+
+  function handleExplosions(deltaTime) {
+    explosion.forEach(exp => {
+      exp.update(deltaTime, player.speed);
+      exp.draw(ctx)
     });
-
-    enemies = enemies.filter((e) => !e.markedForDeletion);
+      explosion = explosion.filter(e => !e.markedForDeletion);
   }
 
   const layer1 = new Layer(document.getElementById("layer1"), 0, canvas);
@@ -121,11 +140,8 @@ window.onload = () => {
     } else if (state === "SITTING LEFT" || state === "SITTING RIGHT") {
       player.energy.regen(0.3);
       player.energy.heal(0.005);
-    } /* else if(state === 'JUMPING LEFT' || state === 'JUMPING RIGHT' || state === 'FALLING LEFT' || state === 'FALLING RIGHT') {
-      player.energy.drain(0.01);
-    } else if(state === 'RUNNING LEFT' || state === 'RUNNING RIGHT') {
-      player.energy.drain(0.008)
-    } */ // for now i dont want these
+    } 
+    handleExplosions(deltaTime);
     player.energy.draw(ctx, 250, 130, 300, 20, deltaTime);
     player.energy.drawHealth(ctx, 250, 70, 300, 50)
     handleParticles();

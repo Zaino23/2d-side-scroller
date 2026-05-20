@@ -54,7 +54,6 @@ export default class Player {
     this.x += this.speed;
     if(this.x >= this.gameWidth - this.width * 2) this.x = this.gameWidth - this.width * 2;
     if(this.x <= 0) this.x = 0;
-    else if(this.x >= this.gameWidth - this.width) this.x = this.gameWidth - this.width;
     //vertica; manegement
     this.y += this.vy;
     if(this.y < 0) {

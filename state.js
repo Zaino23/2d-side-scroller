@@ -1,3 +1,5 @@
+import { playSFX, startLoopingSFX, stopLoopingSFX } from "./audio.js";
+
 export const states =  {
   STANDING_LEFT: 0,
   STANDING_RIGHT: 1,
@@ -32,11 +34,17 @@ export class StandingLeft extends State {
     this.player.frameY = 1;
     this.player.speed = 0;
     this.player.maxFrameX = 6;
+
+    stopLoopingSFX('Run');
   }
   handleInput(input) {
     if(input.includes('ARROWRIGHT') || input.includes('D')) this.player.setState(states.RUNNING_RIGHT);
     else if(input.includes('ARROWLEFT') || input.includes('A')) this.player.setState(states.RUNNING_LEFT);
-    else if(input.includes('ARROWDOWN') || input.includes('S')) this.player.setState(states.SITTING_LEFT);
+    else if(input.includes('ARROWDOWN') || input.includes('S')) {
+      this.player.setState(states.SITTING_LEFT);  
+      this.frameTimer = 0;
+      this.frameX = 0;
+    }
     else if(input.includes(' ')) this.player.setState(states.JUMPING_LEFT);
   }
 }
@@ -49,11 +57,17 @@ export class StandingRight extends State {
     this.player.frameY = 0;
     this.player.speed = 0;
     this.player.maxFrameX = 6;
+
+    stopLoopingSFX('Run');
   }
   handleInput(input) {
     if(input.includes('ARROWLEFT') || input.includes('A')) this.player.setState(states.RUNNING_LEFT);
     else if(input.includes('ARROWRIGHT') || input.includes('D')) this.player.setState(states.RUNNING_RIGHT);
-    else if(input.includes('ARROWDOWN') || input.includes('S')) this.player.setState(states.SITTING_RIGHT);
+    else if(input.includes('ARROWDOWN') || input.includes('S')) {
+      this.player.setState(states.SITTING_RIGHT);
+      this.frameTimer = 0;
+      this.frameX = 0;
+    }
     else if(input.includes(' ')) this.player.setState(states.JUMPING_RIGHT);
   }
 }
@@ -66,6 +80,8 @@ export class SittingLeft extends State {
     this.player.frameY = 9;
     this.player.speed = 0;
     this.player.maxFrameX = 4;
+
+    stopLoopingSFX('Run');
   }
   handleInput(input) {
     if(input.includes('ARROWRIGHT') || input.includes('D')) this.player.setState(states.SITTING_RIGHT);
@@ -81,6 +97,8 @@ export class SittingRight extends State {
     this.player.frameY = 8;
     this.player.speed = 0;
     this.player.maxFrameX = 4;
+
+    stopLoopingSFX('Run');
   }
   handleInput(input) {
     if(input.includes('ARROWLEFT') || input.includes('A')) this.player.setState(states.SITTING_LEFT);
@@ -96,13 +114,15 @@ export class RunningLeft extends State {
     this.player.frameY = 7;
     this.player.speed = -this.player.maxSpeed;
     this.player.maxFrameX = 8;
+
+    startLoopingSFX('Run'); 
   }
   handleInput(input) {
     if(input.includes('ARROWRIGHT') || input.includes('D')) this.player.setState(states.RUNNING_RIGHT);
-    else if(!input.includes('ARROWLEFT') && !input.includes('A')) this.player.setState(states.STANDING_LEFT);
-    else if(input.includes(' ')) this.player.setState(states.JUMPING_LEFT)
-    else if(input.includes('ARROWDOWN') || input.includes('S')) this.player.setState(states.SITTING_LEFT);
-    else if(input.includes('ARROWUP') || input.includes('W')) this.player.setState(states.ROLLING_LEFT);
+    else if(!input.includes('ARROWLEFT') && !input.includes('A')) {this.player.setState(states.STANDING_LEFT); stopLoopingSFX('Run')}
+    else if(input.includes(' ')) {this.player.setState(states.JUMPING_LEFT); stopLoopingSFX('Run')}
+    else if(input.includes('ARROWDOWN') || input.includes('S')) {this.player.setState(states.SITTING_LEFT); stopLoopingSFX('Run')}
+    else if(input.includes('ARROWUP') || input.includes('W')) {this.player.setState(states.ROLLING_LEFT); stopLoopingSFX('Run')}
   }
 }
 export class RunningRight extends State {
@@ -114,13 +134,15 @@ export class RunningRight extends State {
     this.player.frameY = 6;
     this.player.speed = this.player.maxSpeed;
     this.player.maxFrameX = 8;
+
+    startLoopingSFX('Run');
   }
   handleInput(input) {
-    if(input.includes('ARROWLEFT') || input.includes('A')) this.player.setState(states.RUNNING_LEFT);
-    else if(!input.includes('ARROWRIGHT') && !input.includes('D')) this.player.setState(states.STANDING_RIGHT);
-    else if(input.includes(' ')) this.player.setState(states.JUMPING_RIGHT);
-    else if(input.includes('ARROWDOWN') || input.includes('S')) this.player.setState(states.SITTING_RIGHT);
-    else if(input.includes('ARROWUP') || input.includes('W')) this.player.setState(states.ROLLING_RIGHT);
+    if(input.includes('ARROWLEFT') || input.includes('A')) {this.player.setState(states.RUNNING_LEFT);}
+    else if(!input.includes('ARROWRIGHT') && !input.includes('D')) {this.player.setState(states.STANDING_RIGHT); stopLoopingSFX('Run')}
+    else if(input.includes(' ')) {this.player.setState(states.JUMPING_RIGHT); stopLoopingSFX('Run')}
+    else if(input.includes('ARROWDOWN') || input.includes('S')) {this.player.setState(states.SITTING_RIGHT); stopLoopingSFX('Run')}
+    else if(input.includes('ARROWUP') || input.includes('W')) {this.player.setState(states.ROLLING_RIGHT); stopLoopingSFX('Run')}
   }
 }
 export class JumpingLeft extends State {
@@ -130,7 +152,7 @@ export class JumpingLeft extends State {
   } 
   enter() {
     this.player.frameY = 3;
-    if(this.player.onGround()) this.player.vy -= 20;
+    if(this.player.onGround()) {this.player.vy -= 20; playSFX('Jump');}
     this.player.maxFrameX = 6;
   }
   handleInput(input) {
@@ -148,7 +170,7 @@ export class JumpingRight extends State {
   } 
   enter() {
     this.player.frameY = 2;
-    if(this.player.onGround()) this.player.vy -=20;
+    if(this.player.onGround()) {this.player.vy -=20; playSFX('Jump');}
     this.player.maxFrameX = 6;
   }
   handleInput(input) {
@@ -201,6 +223,7 @@ export class DivingLeft extends State {
     else {
       this.player.energy.drain(30)
       
+      playSFX('Dive');
       this.player.frameY = 10;
       this.player.vy += 20;
       this.player.maxFrameX = 6;
@@ -224,11 +247,11 @@ export class DivingRight extends State {
     else {
       this.player.energy.drain(30);
       
+      playSFX('Dive');
       this.player.frameY = 11;
       this.player.vy += 20;
       this.player.maxFrameX = 6;
     }
-
   }
   handleInput(input) {
     if(this.player.onGround())  {this.player.setState(states.STANDING_RIGHT); this.player.diveLanded = true}
@@ -245,6 +268,7 @@ export class RollingLeft extends State {
     else {
       this.player.energy.drain(40) 
       
+      playSFX('Roll');
       this.player.frameY = 10;
       this.player.speed = -this.player.maxSpeed * 2.5;
       this.player.maxFrameX = 6;
@@ -270,6 +294,7 @@ export class RollingRight extends State {
     else {
       this.player.energy.drain(40);
       
+      playSFX('Roll');
       this.player.frameY = 11;
       this.player.speed = this.player.maxSpeed * 2.5;
       this.player.maxFrameX = 6;
@@ -298,6 +323,7 @@ export class AirRollingLeft extends State {
         this.player.frameY = 10;
         this.player.speed = -this.player.maxSpeed * 4;
         this.player.energy.drain(30);
+        playSFX('Roll');
         this.player.maxFrameX = 6;
     }
   }
@@ -319,6 +345,7 @@ export class AirRollingRight extends State {
     } else {
         this.player.frameY = 11;
         this.player.speed = this.player.maxSpeed * 4;
+        playSFX('Roll');
         this.player.energy.drain(30);
         this.player.maxFrameX = 6;
     }
