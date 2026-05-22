@@ -22,3 +22,95 @@ body{
   text-align: center;
   font-size: 80px;
 }
+
+/* menus */
+
+.Ui-Menu {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  position: fixed;
+  width: 650px;
+  height: 500px;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.5s ease-in-out;
+}
+
+/*Start Menu*/
+
+#gameName {
+  text-align: center;
+  font-size: 150px;
+  color: hsl(0, 0%, 45%);
+  -webkit-text-stroke: 3px rgb(0, 0, 0);
+  font-family: "Jersey 10", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  text-shadow: 0 0 50px black,
+               0 0 50px black,
+               0 0 50px black;
+  margin: 25px;
+}
+
+.btn-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.btn {
+  margin: 5px;
+  padding: 10px 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 65px;
+  color: rgb(113, 113, 113);
+  -webkit-text-stroke: 2px black;
+  font-family: "Jersey 10", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.btn:hover {
+  color: rgb(255, 255, 255);
+  text-shadow: 
+              0 0 10px white,
+              0 0 20px white;
+  transition: color 0.2s ease-in-out;
+  transition: text-shadow 0.2s ease-in-out;
+}
+
+.btn.selected {
+  color: rgb(255, 255, 255);
+  text-shadow: 
+              0 0 10px white,
+              0 0 20px white;
+  transition: color 0.2s ease-in-out;
+  transition: text-shadow 0.2s ease-in-out;
+}
+.btn.selected span::before,
+.btn.selected span::after {
+  opacity: 1;
+}
+
+.btn,
+.btn span {
+  font-family: "Jersey 10", sans-serif;
+}
+.btn span::before,
+.btn span::after {
+  transition: opacity 0.2s ease-in-out;
+  opacity: 0;
+}
+.btn span::before {
+  content: "> ";
+}
+.btn span::after {
+  content: " <";
+}
+.btn:hover span::before,
+.btn:hover span::after {
+  opacity: 1;
+}

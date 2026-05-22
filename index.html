@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="style.css">
   <title>Scroller Game</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Jersey+10&display=swap" rel="stylesheet">
+
 </head>
 <body>
     <canvas id="canvas"></canvas>
@@ -18,6 +23,15 @@
     <img src="./backgrounds/layer-3.png" id="layer3">
     <img src="./backgrounds/layer-4.png" id="layer4">
     <img src="./backgrounds/layer-5.png" id="layer5">
+
+    <div id="startMenu" class="Ui-Menu">
+      <h2 id="gameName">DOG DASH</h2>
+      <div class="btn-column">
+      <button id="startBtn" class="btn"><span>START</span></button>
+      <button id="settingsBtn" class="btn"><span>SETTINGS</span></button>
+      <button id="exitBtn" class="btn"><span>EXIT</span></button>
+      </div>
+    </div>
 
     <script type="module" src="mains.js"></script>
 </body>

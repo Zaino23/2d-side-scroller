@@ -7,6 +7,8 @@ import { GroundEnemy, FlyingEnemies } from "./enemies.js";
 import Collision from "./collision.js";
 import { Explosion } from "./collision.js";
 import { playSFX } from "./audio.js";
+import { SCREEN } from "./UI.js";
+import { UI } from "./UI.js";
 
 window.onload = () => {
   const canvas = document.getElementById("canvas");
@@ -19,8 +21,11 @@ window.onload = () => {
   let groundMargin = 0.16;
   const player = new Player(canvas.width, canvas.height, groundMargin);
   const input = new InputHandler();
+  const ui = new UI();
   let particles = [];
   let explosion = [];
+
+  let screen = SCREEN.START;
 
   function handleParticles() {
     if (
@@ -74,13 +79,14 @@ window.onload = () => {
     const isColliding = Collision.check(player, enemy)
 
     if(isColliding && (state === 'DIVING LEFT' || state === 'DIVING RIGHT' || state === 'ROLLING LEFT' || state === 'ROLLING RIGHT'|| state === 'AIRROLLING LEFT' || state === 'AIRROLLING RIGHT')) {
-      playSFX('HitHurt');
+      playSFX('Hit');
       enemy.markedForDeletion = true;
       explosion.push(new Explosion(enemy.x, enemy.y));
       player.energy.heal(5);
       player.energy.regen(25);
     } else if(isColliding) {
-      playSFX('HitHurt');
+      if(player.energy.health <= 0) screen = SCREEN.END
+      playSFX('Hurt');
       enemy.markedForDeletion = true;
       explosion.push(new Explosion(enemy.x, enemy.y));
       player.energy.damage(25);
@@ -122,11 +128,48 @@ window.onload = () => {
 
   const layers = [layer1, layer2, layer3, layer4, layer5];
 
+  function handleStart(deltaTime) {
+    if(screen !== SCREEN.START) return;
+    ctx.save()
+    ctx.filter = 'blur(10px)';
+    layers.forEach((l) => {
+      l.update(3);
+      l.draw(ctx);
+    });
+    player.draw(ctx, deltaTime);
+    player.setState(5)
+    ctx.restore()
+  }
+  
+    window.addEventListener('keydown', (e) => {
+      if(screen !== SCREEN.START) return;
+      ui.handleMenuInput(e.key);
+    })
+
+    const startBtn = document.getElementById('startBtn')
+    const startMenu = document.getElementById('startMenu')
+    startBtn.addEventListener('click', () => {
+      if(screen !== SCREEN.START) return;
+      screen = SCREEN.PLAYING
+      startMenu.style.opacity = 0;
+    })
+    window.addEventListener('keydown', (e) => {
+      if(screen !== SCREEN.START || ui.selectedIndex !== 0) return;
+      if(e.key.toUpperCase() !== 'ENTER') return;
+      screen = SCREEN.PLAYING
+      startMenu.style.opacity = 0;
+    })
+
   let lastTime = 0;
   function animate(timeStamp) {
     const deltaTime = timeStamp - lastTime;
     lastTime = timeStamp;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    handleStart(deltaTime);
+    if(screen === SCREEN.START) ui.drawStart(ctx, canvas);
+    else if(screen === SCREEN.PAUSE) ui.drawPause(ctx, canvas);
+    else if(screen === SCREEN.END) ui.drawEnd(ctx, canvas);
+    if(screen === 'playing') {
     layers.forEach((l) => {
       l.update(player.speed * 2);
       l.draw(ctx);
@@ -145,7 +188,8 @@ window.onload = () => {
     player.energy.draw(ctx, 250, 130, 300, 20, deltaTime);
     player.energy.drawHealth(ctx, 250, 70, 300, 50)
     handleParticles();
-    drawStatus(ctx, input, player);
+    drawStatus(ctx, input, player, canvas);
+  }
     requestAnimationFrame(animate);
   }
   animate(0);
