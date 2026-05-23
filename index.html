@@ -25,11 +25,44 @@
     <img src="./backgrounds/layer-5.png" id="layer5">
 
     <div id="startMenu" class="Ui-Menu">
-      <h2 id="gameName">DOG DASH</h2>
+      <h2  class="gameTitle">DOG DASH</h2>
       <div class="btn-column">
-      <button id="startBtn" class="btn"><span>START</span></button>
-      <button id="settingsBtn" class="btn"><span>SETTINGS</span></button>
-      <button id="exitBtn" class="btn"><span>EXIT</span></button>
+      <button id="startBtn" class="btn Sbtn"><span>START</span></button>
+      <button class="btn settingBtn Sbtn"><span>SETTINGS</span></button>
+      <button class="btn exitBtn Sbtn"><span>EXIT</span></button>
+      </div>
+    </div>
+    
+    <div id="pauseMenu" class="Ui-Menu hide">
+      <h2 class="gameTitle">PAUSED</h2>
+      <div class="btn-column">
+      <button id="resumeBtn" class="btn Pbtn"><span>RESUME</span></button>
+      <button class="btn settingBtn Pbtn"><span>SETTINGS</span></button>
+      <button  class="btn exitBtn Pbtn"><span>EXIT</span></button>
+      </div>
+    </div>
+
+    <div id="selectMenu" class="hide">
+      <div id="selection1" class="selector">
+        <h2 class="bundle-num">CHALLENGE1:</h2>
+        <h2 class="time">Time: 30s</h2>
+        <h2 class="goal">Goal: 60 Kills</h2>
+        <h2 class="reward">Reward: 50$</h2>
+        <button class="select" id="select1">SELECT</button>
+      </div>
+      <div id="selection2" class="selector">
+        <h2 class="bundle-num">CHALLENGE2:</h2>
+        <h2 class="time">Time: 30s</h2>
+        <h2 class="goal">Goal: 120 Kills</h2>
+        <h2 class="reward">Reward: 500$</h2>
+        <button class="select" id="select2">SELECT</button>
+      </div>
+      <div id="selection3" class="selector">
+        <h2 class="bundle-num">CHALLENGE3:</h2>
+        <h2 class="time">Time: 60s</h2>
+        <h2 class="goal">Goal: 240 Kills</h2>
+        <h2 class="reward">Reward: 2500$</h2>
+        <button class="select" id="select3">SELECT</button>
       </div>
     </div>
 

@@ -1,5 +1,5 @@
 export function drawStatus(context, input, player, canvas) {
-  context.font = '35px  sans';
+  context.font = '40px "Jersey 10"';
   context.strokeStyle = 'black';
   context.fillStyle = 'white';
   context.lineWidth = 1;

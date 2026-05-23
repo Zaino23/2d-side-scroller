@@ -4,13 +4,15 @@ export const audios = {
   Roll: new Audio('./soundEffects/Roll.ogg'),
   Dive: new Audio('./soundEffects/fire.mp3'),
   Hit: new Audio('./soundEffects/Hit.mp3'),
-  Hurt: new Audio('./soundEffects/Hurt.wav')
+  Hurt: new Audio('./soundEffects/Hurt.wav'),
+  Select: new Audio('./soundEffects/Select.wav'),
+  Selected: new Audio('./soundEffects/Selected.wav'),
 };
 
 const audioSettings = {
   Run: {
     playbackRate: 0.2,
-    volume: 0.4
+    volume: 0.2
   },
   Jump: {
     playbackRate: 0.7,

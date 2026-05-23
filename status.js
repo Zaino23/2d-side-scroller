@@ -36,11 +36,6 @@ export class Status {
     } 
 
     if(!this.visible) return;
-    
-    //text
-    context.fillStyle = 'white';
-    context.font = '40px helvetica';
-    context.fillText('ENERGY:', x / 5, y +20);
 
     const ratio  = this.value / this.max;
     context.save();
@@ -67,10 +62,6 @@ export class Status {
     this.health = Math.min(this.maxHealth, this.health + amount);
   }
   drawHealth(context, x, y, width, height) {
-    //text
-    context.fillStyle = 'white';
-    context.font = '46px helvetica';
-    context.fillText('HEALTH:', x / 5, y +40);
 
     //background
     context.fillStyle = 'rgba(0,0,0,0.5)';
@@ -86,4 +77,35 @@ export class Status {
     context.lineWidth = 2;
     context.strokeRect(x, y, width, height)
   }
+  drawTime(ctx, canvas, timeLeft, initialTime) {
+    const ratio = timeLeft / initialTime;
+    ctx.fillStyle = ratio > 0.6 ? 'darkgreen' : ratio > 0.5 ? 'orange' : 'red';
+    ctx.font = '40px "Jersey 10"';
+    ctx.strokeStyle = 'white';
+    ctx.lineWidth = 1
+    ctx.fillText(`${timeLeft.toFixed(2)}s`, canvas.width / 2 - 30, 50);
+    ctx.strokeText(`${timeLeft.toFixed(2)}s`, canvas.width / 2 - 30, 50);
+  }
+  drawGoal(ctx, kills, killsGoal, x, y, width, height) {
+    //background
+    ctx.fillStyle = 'rgba(0,0,0,0.5)';
+    ctx.fillRect(x, y, width, height)
+
+    //bar
+    const ratio = kills / killsGoal;
+    ctx.fillStyle = ratio > 0.6 ? 'darkgreen' : ratio > 0.5 ? 'orange' : 'red';
+    ctx.fillRect(x, y, width * ratio, height)
+
+    //border
+    ctx.strokeStyle = 'white';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(x, y, width, height);
+
+    //text
+    ctx.fillStyle = ratio > 0.6 ? 'darkgreen' : ratio > 0.5 ? 'orange' : 'red';
+    ctx.font = '55px "Jersey 10"';
+    ctx.strokeStyle = 'white';
+    ctx.lineWidth = 1;
+    ctx.fillText('Kills Goal:',  x - 175, y + y / 2.5 , 750)
+  } 
 }

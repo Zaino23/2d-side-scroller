@@ -9,10 +9,10 @@ class Enemy{
     this.sizeHeight;
     this.gameWidth = gameWidth; 
     this.gameHeight = gameHeight;
-    this.speedX = 1;
+    this.speedX = 3;
     this.frameX = 0;
     this.maxFrameX= 11;
-    this.fps = 20;
+    this.fps = 30;
     this.frameInterval = 1000/this.fps;
     this.frameTimer = 0;
     this.markedForDeletion = false;

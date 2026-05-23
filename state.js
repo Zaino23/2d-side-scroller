@@ -48,6 +48,7 @@ export class StandingLeft extends State {
     else if(input.includes(' ')) this.player.setState(states.JUMPING_LEFT);
   }
 }
+
 export class StandingRight extends State {
   constructor(player) {
     super('STANDING RIGHT');
@@ -71,6 +72,7 @@ export class StandingRight extends State {
     else if(input.includes(' ')) this.player.setState(states.JUMPING_RIGHT);
   }
 }
+
 export class SittingLeft extends State {
   constructor(player) {
     super('SITTING LEFT');
@@ -88,6 +90,7 @@ export class SittingLeft extends State {
     else if(!input.includes('ARROWDOWN') && !input.includes('S')) this.player.setState(states.STANDING_LEFT);
   }
 }
+
 export class SittingRight extends State {
   constructor(player) {
     super('SITTING RIGHT');
@@ -105,6 +108,7 @@ export class SittingRight extends State {
     else if(!input.includes('ARROWDOWN') && !input.includes('S')) this.player.setState(states.STANDING_RIGHT);
   }
 }
+
 export class RunningLeft extends State {
   constructor(player) {
     super('RUNNING LEFT');
@@ -125,6 +129,7 @@ export class RunningLeft extends State {
     else if(input.includes('ARROWUP') || input.includes('W')) {this.player.setState(states.ROLLING_LEFT); stopLoopingSFX('Run')}
   }
 }
+
 export class RunningRight extends State {
   constructor(player) {
     super('RUNNING RIGHT');
@@ -145,6 +150,7 @@ export class RunningRight extends State {
     else if(input.includes('ARROWUP') || input.includes('W')) {this.player.setState(states.ROLLING_RIGHT); stopLoopingSFX('Run')}
   }
 }
+
 export class JumpingLeft extends State {
   constructor(player) {
     super('JUMPING LEFT');
@@ -152,7 +158,7 @@ export class JumpingLeft extends State {
   } 
   enter() {
     this.player.frameY = 3;
-    if(this.player.onGround()) {this.player.vy -= 20; playSFX('Jump');}
+    if(this.player.onGround()) {this.player.vy -= 30; playSFX('Jump');}
     this.player.maxFrameX = 6;
   }
   handleInput(input) {
@@ -163,6 +169,7 @@ export class JumpingLeft extends State {
     else if(this.player.vy > 0 ) this.player.setState(states.FALLING_LEFT)
   }
 }
+
 export class JumpingRight extends State {
   constructor(player) {
     super('JUMPING RIGHT');
@@ -170,7 +177,7 @@ export class JumpingRight extends State {
   } 
   enter() {
     this.player.frameY = 2;
-    if(this.player.onGround()) {this.player.vy -=20; playSFX('Jump');}
+    if(this.player.onGround()) {this.player.vy -= 30; playSFX('Jump');}
     this.player.maxFrameX = 6;
   }
   handleInput(input) {
@@ -181,6 +188,7 @@ export class JumpingRight extends State {
     else if(this.player.vy > 0 ) this.player.setState(states.FALLING_RIGHT)
   }
 }
+
 export class FallingLeft extends State {
   constructor(player) {
     super('FALLING LEFT');
@@ -195,6 +203,7 @@ export class FallingLeft extends State {
     else if(input.includes("ARROWDOWN") || input.includes('S')) this.player.setState(states.DIVING_LEFT)
   }
 }
+
 export class FallingRight extends State {
   constructor(player) {
     super('FALLING RIGHT');
@@ -209,6 +218,7 @@ export class FallingRight extends State {
     else if(input.includes("ARROWDOWN") || input.includes('S')) this.player.setState(states.DIVING_RIGHT)
   }
 }
+
 export class DivingLeft extends State {
   constructor(player) {
     super('DIVING LEFT');
@@ -225,7 +235,7 @@ export class DivingLeft extends State {
       
       playSFX('Dive');
       this.player.frameY = 10;
-      this.player.vy += 20;
+      this.player.vy += 30;
       this.player.maxFrameX = 6;
     }
   }
@@ -233,6 +243,7 @@ export class DivingLeft extends State {
     if(this.player.onGround()) {this.player.setState(states.STANDING_LEFT); this.player.diveLanded = true;}
   }
 }
+
 export class DivingRight extends State {
   constructor(player) {
     super('DIVING RIGHT');
@@ -249,7 +260,7 @@ export class DivingRight extends State {
       
       playSFX('Dive');
       this.player.frameY = 11;
-      this.player.vy += 20;
+      this.player.vy += 30;
       this.player.maxFrameX = 6;
     }
   }
@@ -257,6 +268,7 @@ export class DivingRight extends State {
     if(this.player.onGround())  {this.player.setState(states.STANDING_RIGHT); this.player.diveLanded = true}
   }
 }
+
 export class RollingLeft extends State {
   constructor(player) {
     super('ROLLING LEFT');
@@ -283,6 +295,7 @@ export class RollingLeft extends State {
     else if(input.includes('ARROWDOWN') || input.includes('S')) this.player.setState(states.SITTING_LEFT);
   }
 }
+
 export class RollingRight extends State {
   constructor(player) {
     super('ROLLING RIGHT');
@@ -309,6 +322,7 @@ export class RollingRight extends State {
     else if(input.includes('ARROWDOWN') || input.includes('S')) this.player.setState(states.SITTING_RIGHT);
   }
 }
+
 export class AirRollingLeft extends State {
   constructor(player) {
     super('AIRROLLING LEFT')
@@ -332,6 +346,7 @@ export class AirRollingLeft extends State {
     else if(this.player.vy > 0 ) this.player.setState(states.FALLING_LEFT)
   }
 }
+
 export class AirRollingRight extends State {
   constructor(player) {
     super('AIRROLLING RIGHT')
@@ -355,4 +370,3 @@ export class AirRollingRight extends State {
     else if(this.player.vy > 0 ) this.player.setState(states.FALLING_RIGHT)
   }
 }
-

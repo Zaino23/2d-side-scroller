@@ -9,6 +9,7 @@ import { Explosion } from "./collision.js";
 import { playSFX } from "./audio.js";
 import { SCREEN } from "./UI.js";
 import { UI } from "./UI.js";
+import { MenuManager } from "./menus.js";
 
 window.onload = () => {
   const canvas = document.getElementById("canvas");
@@ -26,6 +27,20 @@ window.onload = () => {
   let explosion = [];
 
   let screen = SCREEN.START;
+  let timeLeft = 0;
+  let initialTime = 0;
+  let killsGoal = 0;
+  function setToPlaying(newScreen, newInitialTime, newTimeLeft, newKillsGoal) {
+    screen = newScreen;
+    initialTime = newInitialTime;
+    timeLeft = newTimeLeft;
+    killsGoal = newKillsGoal;
+  }
+  function updateScreen(newScreen) {
+    screen = newScreen;
+  }
+
+  const menuManager = new MenuManager(screen, SCREEN, playSFX, ui, initialTime, timeLeft, killsGoal, setToPlaying, updateScreen);
 
   function handleParticles() {
     if (
@@ -70,8 +85,9 @@ window.onload = () => {
   let enemies = [];
   let GroundSpawnTimer = 0;
   let FlyingSpawnTimer = 0;
-  let GroundspawnInterval = 850;
-  let FlyingspawnInterval = 750;
+  let GroundspawnInterval = 1000;
+  let FlyingspawnInterval = 1000;
+  let kills = 0;
 
   function handleEnemies(deltaTime) {    
     const state = player.currentState.state;
@@ -82,14 +98,14 @@ window.onload = () => {
       playSFX('Hit');
       enemy.markedForDeletion = true;
       explosion.push(new Explosion(enemy.x, enemy.y));
+      kills ++;
       player.energy.heal(5);
       player.energy.regen(25);
     } else if(isColliding) {
-      if(player.energy.health <= 0) screen = SCREEN.END
       playSFX('Hurt');
       enemy.markedForDeletion = true;
       explosion.push(new Explosion(enemy.x, enemy.y));
-      player.energy.damage(25);
+      player.energy.damage(15);
       player.energy.drain(5)
     }
     if(!enemy.markedForDeletion) {
@@ -128,69 +144,59 @@ window.onload = () => {
 
   const layers = [layer1, layer2, layer3, layer4, layer5];
 
-  function handleStart(deltaTime) {
-    if(screen !== SCREEN.START) return;
-    ctx.save()
-    ctx.filter = 'blur(10px)';
-    layers.forEach((l) => {
-      l.update(3);
-      l.draw(ctx);
-    });
-    player.draw(ctx, deltaTime);
-    player.setState(5)
-    ctx.restore()
-  }
-  
-    window.addEventListener('keydown', (e) => {
-      if(screen !== SCREEN.START) return;
-      ui.handleMenuInput(e.key);
-    })
+    const pauseMenu = document.getElementById('pauseMenu');
+    const resumeBtn = document.getElementById('resumeBtn')
 
-    const startBtn = document.getElementById('startBtn')
-    const startMenu = document.getElementById('startMenu')
-    startBtn.addEventListener('click', () => {
-      if(screen !== SCREEN.START) return;
-      screen = SCREEN.PLAYING
-      startMenu.style.opacity = 0;
-    })
-    window.addEventListener('keydown', (e) => {
-      if(screen !== SCREEN.START || ui.selectedIndex !== 0) return;
-      if(e.key.toUpperCase() !== 'ENTER') return;
-      screen = SCREEN.PLAYING
-      startMenu.style.opacity = 0;
-    })
+    function calculateGame() {
+      if(timeLeft <= 0 || kills !== killsGoal || player.energy.health <= 0) {
+        screen = SCREEN.LOSE
+      } else if(kills === killsGoal && timeLeft > 0 && player.energy.health > 0) {
+        screen = SCREEN.WIN
+      }
+    }
 
   let lastTime = 0;
+  const targetFPS = 60;
+  const fpsInterval = 1000 / targetFPS;
+
   function animate(timeStamp) {
+
+    requestAnimationFrame(animate);
+
     const deltaTime = timeStamp - lastTime;
-    lastTime = timeStamp;
+    if (deltaTime >= fpsInterval) {
+    lastTime = timeStamp - (deltaTime % fpsInterval);
+
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    handleStart(deltaTime);
-    if(screen === SCREEN.START) ui.drawStart(ctx, canvas);
-    else if(screen === SCREEN.PAUSE) ui.drawPause(ctx, canvas);
-    else if(screen === SCREEN.END) ui.drawEnd(ctx, canvas);
-    if(screen === 'playing') {
+    if(screen === SCREEN.START) menuManager.handleStart(ctx, deltaTime, layers, player);
+    else if(screen === SCREEN.PAUSE) menuManager.handlePause(ctx, canvas, deltaTime, input, layers, player, enemies, drawStatus, timeLeft, initialTime, kills, killsGoal);
+    if(screen === SCREEN.PLAYING) {
     layers.forEach((l) => {
       l.update(player.speed * 2);
       l.draw(ctx);
     });
-    player.draw(ctx, deltaTime);
+    player.draw(ctx);
+    player.updateAnimation(deltaTime);
     player.update(input.keys, deltaTime);
     handleEnemies(deltaTime);
     const state = player.currentState.state;
     if (state === "STANDING LEFT" || state === "STANDING RIGHT") {
-      player.energy.regen(0.15);
+      player.energy.regen(0.40);
     } else if (state === "SITTING LEFT" || state === "SITTING RIGHT") {
-      player.energy.regen(0.3);
-      player.energy.heal(0.005);
+      player.energy.regen(1);
+      player.energy.heal(0.01);
     } 
     handleExplosions(deltaTime);
-    player.energy.draw(ctx, 250, 130, 300, 20, deltaTime);
-    player.energy.drawHealth(ctx, 250, 70, 300, 50)
+    timeLeft -= deltaTime / 1000;
+    if(timeLeft <= 0 || kills >= killsGoal || player.energy.health <= 0) calculateGame();
+    player.energy.draw(ctx, 50, 105, 300, 20, deltaTime);
+    player.energy.drawHealth(ctx, 50, 50, 300, 50)
+    player.energy.drawTime(ctx, canvas, timeLeft, initialTime)
+    player.energy.drawGoal(ctx, kills, killsGoal, canvas.width / 2 - 150, 75, 300, 40)
     handleParticles();
     drawStatus(ctx, input, player, canvas);
+    }
   }
-    requestAnimationFrame(animate);
   }
   animate(0);
-};
+}
