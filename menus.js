@@ -1,5 +1,5 @@
 export class MenuManager {
-  constructor(screen, SCREEN, playSFX, ui, initialTime, timeLeft, killsGoal, setToPlaying, updateScreen) {
+  constructor(screen, SCREEN, playSFX, ui, setToPlaying, updateScreen) {
         this.startBtn = document.getElementById('startBtn');
         this.startMenu = document.getElementById('startMenu');
         this.selectMenu = document.getElementById('selectMenu');
@@ -64,12 +64,18 @@ export class MenuManager {
               this.btns.selectBtn.forEach(btn => {
                 btn.addEventListener('click', () => {
                 if(this.screen !== this.SCREEN.SELECTING) return;
-                if(btn.id === 'select1') {timeLeft = 30; initialTime = timeLeft; killsGoal = 60;}
-                if(btn.id === 'select2') {timeLeft = 30; initialTime = timeLeft; killsGoal = 120;}
-                if(btn.id === 'select3') {timeLeft = 60; initialTime = timeLeft; killsGoal = 240;}
+
+                let initialTime = 0;
+                let timeLeft = 0;
+                let killsGoal = 0;
+                let reward = 0;
+
+                if(btn.id === 'select1') {timeLeft = 30; initialTime = timeLeft; killsGoal = 60; reward = 50;}
+                if(btn.id === 'select2') {timeLeft = 40; initialTime = timeLeft; killsGoal = 125; reward = 500;}
+                if(btn.id === 'select3') {timeLeft = 60; initialTime = timeLeft; killsGoal = 225; reward = 2500;}
                 this.selectMenu.classList.toggle('hide')
                 this.screen = this.SCREEN.PLAYING;
-                setToPlaying(this.screen, initialTime, timeLeft, killsGoal);
+                setToPlaying(this.screen, initialTime, timeLeft, killsGoal, reward);
                 playSFX('Selected')
                 });
               });

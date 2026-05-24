@@ -11,6 +11,12 @@ import { SCREEN } from "./UI.js";
 import { UI } from "./UI.js";
 import { MenuManager } from "./menus.js";
 
+  export let minEnemySpacing = 25; 
+  export let lastEnemyX = 800;
+  export function updateLastEnemyX(val) {
+    lastEnemyX = val;
+}
+
 window.onload = () => {
   const canvas = document.getElementById("canvas");
   const ctx = canvas.getContext("2d");
@@ -27,20 +33,22 @@ window.onload = () => {
   let explosion = [];
 
   let screen = SCREEN.START;
+  let reward = 0;
   let timeLeft = 0;
   let initialTime = 0;
   let killsGoal = 0;
-  function setToPlaying(newScreen, newInitialTime, newTimeLeft, newKillsGoal) {
+  function setToPlaying(newScreen, newInitialTime, newTimeLeft, newKillsGoal, newReward) {
     screen = newScreen;
     initialTime = newInitialTime;
     timeLeft = newTimeLeft;
     killsGoal = newKillsGoal;
+    reward = newReward;
   }
   function updateScreen(newScreen) {
     screen = newScreen;
   }
 
-  const menuManager = new MenuManager(screen, SCREEN, playSFX, ui, initialTime, timeLeft, killsGoal, setToPlaying, updateScreen);
+  const menuManager = new MenuManager(screen, SCREEN, playSFX, ui, setToPlaying, updateScreen);
 
   function handleParticles() {
     if (
@@ -85,12 +93,14 @@ window.onload = () => {
   let enemies = [];
   let GroundSpawnTimer = 0;
   let FlyingSpawnTimer = 0;
-  let GroundspawnInterval = 1000;
-  let FlyingspawnInterval = 1000;
+  let GroundspawnInterval = 500;
+  let FlyingspawnInterval = 500;
   let kills = 0;
 
   function handleEnemies(deltaTime) {    
     const state = player.currentState.state;
+    lastEnemyX -= (3 + player.speed);
+    if (lastEnemyX < canvas.width) lastEnemyX = canvas.width;
     enemies.forEach(enemy => {
     const isColliding = Collision.check(player, enemy)
 

@@ -1,3 +1,5 @@
+import * as MainModule from './mains.js'
+
 class Enemy{
   constructor(gameWidth, gameHeight) {
     this.image;
@@ -52,7 +54,8 @@ export class GroundEnemy extends Enemy{
     this.height = 508;
     this.sizeWidth = 100;
     this.sizeHeight = 113;
-    this.x = gameWidth + Math.random() *  500;
+    this.x = Math.max(gameWidth, MainModule.lastEnemyX + MainModule.minEnemySpacing) + Math.random() * 300;
+    MainModule.updateLastEnemyX(this.x);  
     this.y = this.gameHeight - this.sizeHeight - this.gameHeight * (this.groundMargin *0.95);
     this.speedX = Math.random() * 1 + 1;
     this.maxFrameX = 25;
@@ -66,7 +69,8 @@ export class FlyingEnemies extends Enemy{
     this.height = 582;
     this.sizeWidth = 99;
     this.sizeHeight = 145.5;
-    this.x = gameWidth + Math.random() * 125;
+    this.x = Math.max(gameWidth, MainModule.lastEnemyX + MainModule.minEnemySpacing) + Math.random() * 150;
+    MainModule.updateLastEnemyX(this.x)
     this.y = Math.max(0, gameHeight / 3 - Math.random() * 200);
     this.speedX = Math.random() + 1;
     this.baseY = gameHeight * 0.15 + Math.random() * gameHeight * 0.25;
